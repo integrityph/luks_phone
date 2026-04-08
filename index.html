@@ -349,10 +349,10 @@
 
         // 2. Wrap outgoing messages in the WSEnvelope
         function sendWebRTC(payload) {
+            payload["CLID"] = CLID??1;
             if (ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({
                     type: "webrtc",
-                    CLID: CLID??1,
                     payload: payload
                 }));
             }
