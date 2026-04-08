@@ -125,6 +125,7 @@
                     const reservation = reservationRoom ? reservations.result.find(entry => entry.ID == reservationRoom.ReservationID) : null;
                     return {
                         roomId: room.ID.toString(),
+                        reservationRoomId: reservationRoom.ID.toString(),
                         roomName: `${room.RoomModel.Name} ${room.Number}`,
                         guestName: reservation ? `${reservation.Guest.FirstName} ${reservation.Guest.LastName}` : "Vacant",
                         status: reservation ? "checked-in" : "vacant",
@@ -186,12 +187,12 @@
                     <div class="text-2xl font-bold text-gray-800 mb-1 tracking-tight">${room.roomName}</div>
                     <div class="text-sm font-medium text-gray-500 mb-5 min-h-[1.25rem]">${room.guestName}</div>
                     
-                    <button id="answerBtn-${room.roomId}" onclick="answerCall('${room.roomId}')" 
+                    <button id="answerBtn-${room.roomId}" onclick="answerCall('${room.reservationRoomId}')" 
                             class="hidden w-full bg-checked-in text-white font-semibold py-2.5 rounded-xl transition duration-200 mb-2 hover:bg-emerald-600 shadow-md animate-pulse">
                         Answer Call
                     </button>
                     
-                    <button id="callBtn-${room.roomId}" onclick="initiateCall('${room.roomId}')" ${!isCallable ? 'disabled' : ''} 
+                    <button id="callBtn-${room.roomId}" onclick="initiateCall('${room.reservationRoomId}')" ${!isCallable ? 'disabled' : ''} 
                             class="w-full flex items-center justify-center gap-2 font-semibold py-2.5 rounded-xl transition-all duration-200 ${btnClasses}">
                         ${btnContent}
                     </button>
