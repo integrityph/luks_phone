@@ -218,13 +218,14 @@
         }
 
         // --- 4. WEBRTC & SIGNALING LOGIC ---
-        const BACKEND_WS_SERVER = "ws://192.168.151.50:8080";
-        const BACKEND_API_SERVER = "http://192.168.149.60:8080";
+        const BACKEND_WS_SERVER = "ws://192.168.148.247:8080";
+        const BACKEND_API_SERVER = "http://192.168.148.247:8080";
         const TURN_SERVER = "192.168.151.50:3478";
         let ws;
         let pc;
         let localStream;
         let isCaller = false;
+        let CLID;
         
         // BUG FIX: The ICE Candidate Queue
         let pendingCandidates = [];
@@ -329,21 +330,42 @@
             renderGrid(); 
         }
 
+        async function getCallID(to) {
+            const session = localStorage.getItem("session");
+            const response = await fetch(`${BACKEND_API_SERVER}/admin/api/d/calllog/add?session=${session}&_from=FRONT_DESK&_to=${to}`, {
+                headers : {
+                    "X-CSRF-TOKEN": session,
+                }
+            });
+
+            if (response.status != 200) {
+                throw new Error("Unable to register a new CallLog.");
+            }
+
+            const obj = await response.json();
+
+            return obj["id"][0];
+        }
+
         // 2. Wrap outgoing messages in the WSEnvelope
         function sendWebRTC(payload) {
             if (ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({
                     type: "webrtc",
+                    CLID: CLID??1,
                     payload: payload
                 }));
             }
         }
 
         // 3. Update all your action functions to use sendWebRTC instead of ws.send
-        function initiateCall(roomId) {
+        async function initiateCall(roomId) {
             isCaller = true;
             activeRoomId = roomId;
             showActiveCallBanner(roomId, "Ringing...");
+
+            CLID = await getCallID(roomId);
+
             sendWebRTC({ type: 'ring', roomId: roomId }); 
         }
 
