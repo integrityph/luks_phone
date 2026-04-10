@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,38 +20,45 @@
         }
     </script>
 </head>
+
 <body class="bg-gray-100 text-gray-800 flex gap-6 p-6 min-h-screen font-sans">
 
     <div class="flex-[3]">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-gray-800 tracking-tight">Front Desk Switchboard</h2>
-            <div id="system-status" class="font-medium text-gray-500 bg-white px-4 py-2 rounded-full shadow-sm text-sm">System Loading...</div>
+            <div id="system-status" class="font-medium text-gray-500 bg-white px-4 py-2 rounded-full shadow-sm text-sm">
+                System Loading...</div>
         </div>
 
-        <div id="active-call-banner" class="hidden bg-gray-900 text-white px-6 py-4 rounded-xl mb-6 justify-between items-center shadow-lg ring-1 ring-black/5">
+        <div id="active-call-banner"
+            class="hidden bg-gray-900 text-white px-6 py-4 rounded-xl mb-6 justify-between items-center shadow-lg ring-1 ring-black/5">
             <div class="flex items-center gap-3">
                 <span class="relative flex h-3 w-3">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-checked-in opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-3 w-3 bg-checked-in"></span>
+                    <span
+                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-checked-in opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-checked-in"></span>
                 </span>
                 <span id="active-call-info" class="font-medium tracking-wide">Active Call: Room --</span>
             </div>
-            <button id="globalEndBtn" onclick="endCall()" class="bg-dnd hover:bg-red-600 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 shadow-sm flex items-center gap-2">
+            <button id="globalEndBtn" onclick="endCall()"
+                class="bg-dnd hover:bg-red-600 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 shadow-sm flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
+                    <path fill-rule="evenodd"
+                        d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z"
+                        clip-rule="evenodd" />
                 </svg>
                 End Call
             </button>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5" id="room-grid">
-            </div>
+        </div>
     </div>
 
     <div class="flex-1 bg-white p-6 rounded-2xl shadow-sm h-[calc(100vh-48px)] overflow-y-auto ring-1 ring-gray-200">
         <h3 class="text-lg font-bold border-b border-gray-100 pb-4 mb-4 text-gray-800 tracking-tight">Call History</h3>
         <div id="call-history-list" class="flex flex-col gap-2">
-            </div>
+        </div>
     </div>
 
     <audio id="remoteAudio" autoplay class="hidden"></audio>
@@ -59,10 +67,10 @@
         // --- 1. MOCK DATA APIS ---
         async function fetchRoom() {
             const session = localStorage.getItem("session");
-            
+
             // 1. Await the network request
             const response = await fetch(`${BACKEND_API_SERVER}/admin/api/d/room?session=${session}&$preload=1`);
-            
+
             // Optional but highly recommended: Check if the request actually succeeded 
             // (fetch doesn't throw an error for 404s or 500s natively)
             if (!response.ok) {
@@ -70,7 +78,7 @@
             }
 
             // 2. Await and return the parsed JSON
-            return await response.json(); 
+            return await response.json();
         }
 
         async function fetchReservationRoom() {
@@ -84,7 +92,7 @@
             }
 
             // 2. Await and return the parsed JSON
-            return await response.json(); 
+            return await response.json();
         }
 
         async function fetchReservation() {
@@ -98,7 +106,7 @@
             }
 
             // 2. Await and return the parsed JSON
-            return await response.json(); 
+            return await response.json();
         }
 
         async function fetchCallHistory() {
@@ -125,7 +133,7 @@
                     const reservation = reservationRoom ? reservations.result.find(entry => entry.ID == reservationRoom.ReservationID) : null;
                     return {
                         roomId: room.ID.toString(),
-                        reservationRoomId: reservationRoom.ID.toString(),
+                        reservationRoomId: reservationRoom ? reservationRoom.ID.toString() : "0",
                         roomName: `${room.RoomModel.Name} ${room.Number}`,
                         guestName: reservation ? `${reservation.Guest.FirstName} ${reservation.Guest.LastName}` : "Vacant",
                         status: reservation ? "checked-in" : "vacant",
@@ -149,27 +157,27 @@
         function renderGrid() {
             const grid = document.getElementById('room-grid');
             grid.innerHTML = '';
-            
+
             phoneBook.forEach(room => {
                 const card = document.createElement('div');
-                
+
                 const isCallable = room.status === 'checked-in';
                 const isDND = room.status === 'dnd';
-                
+
                 // Card styling based on state (Gray out if not callable)
-                const borderClass = room.status === 'checked-in' ? 'border-checked-in' : 
-                                    room.status === 'dnd' ? 'border-dnd' : 'border-vacant';
-                
+                const borderClass = room.status === 'checked-in' ? 'border-checked-in' :
+                    room.status === 'dnd' ? 'border-dnd' : 'border-vacant';
+
                 // Dim the whole card if it's vacant or DND
                 const cardOpacityClass = isCallable ? 'bg-white shadow-sm' : 'bg-gray-50 opacity-60 grayscale-[0.5]';
 
                 card.className = `p-5 rounded-2xl flex flex-col items-center text-center border-t-[6px] ${borderClass} ${cardOpacityClass} transition-all`;
                 card.id = `card-${room.roomId}`;
-                
+
                 // Button Styling
                 let btnContent = '';
                 let btnClasses = '';
-                
+
                 const phoneIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg>`;
 
                 if (isCallable) {
@@ -182,17 +190,17 @@
                     btnContent = `<span>Vacant</span>`;
                     btnClasses = 'bg-gray-200 text-gray-400 cursor-not-allowed';
                 }
-                
+
                 card.innerHTML = `
                     <div class="text-2xl font-bold text-gray-800 mb-1 tracking-tight">${room.roomName}</div>
                     <div class="text-sm font-medium text-gray-500 mb-5 min-h-[1.25rem]">${room.guestName}</div>
                     
-                    <button id="answerBtn-${room.roomId}" onclick="answerCall('${room.reservationRoomId}')" 
+                    <button id="answerBtn-${room.roomId}" onclick="answerCall('${room.roomId}', '${room.reservationRoomId}')" 
                             class="hidden w-full bg-checked-in text-white font-semibold py-2.5 rounded-xl transition duration-200 mb-2 hover:bg-emerald-600 shadow-md animate-pulse">
                         Answer Call
                     </button>
                     
-                    <button id="callBtn-${room.roomId}" onclick="initiateCall('${room.reservationRoomId}')" ${!isCallable ? 'disabled' : ''} 
+                    <button id="callBtn-${room.roomId}" onclick="initiateCall('${room.roomId}', '${room.reservationRoomId}', '${room.roomName}')" ${!isCallable ? 'disabled' : ''} 
                             class="w-full flex items-center justify-center gap-2 font-semibold py-2.5 rounded-xl transition-all duration-200 ${btnClasses}">
                         ${btnContent}
                     </button>
@@ -207,9 +215,9 @@
             history.forEach(log => {
                 const item = document.createElement('div');
                 const isMissed = log.type === 'missed';
-                
+
                 item.className = `py-3 border-b border-gray-50 flex justify-between items-center text-sm ${isMissed ? 'text-dnd font-semibold' : 'text-gray-600 font-medium'}`;
-                
+
                 item.innerHTML = `
                     <span>Rm ${log.roomId} &middot; ${log.time}</span>
                     ${isMissed ? `<button onclick="initiateCall('${log.roomId}')" class="bg-red-50 text-dnd hover:bg-red-100 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">Call Back</button>` : ''}
@@ -227,7 +235,7 @@
         let localStream;
         let isCaller = false;
         let CLID;
-        
+
         // BUG FIX: The ICE Candidate Queue
         let pendingCandidates = [];
 
@@ -239,33 +247,34 @@
         function setupWebSocket(session) {
             // Include the session in the URL to mimic production routing
             ws = new WebSocket(`${BACKEND_WS_SERVER}/ws?session=${session}`);
-            
+
             ws.onopen = () => {
                 const statusEl = document.getElementById('system-status');
                 statusEl.innerText = "System Online";
-                statusEl.className = "font-medium text-checked-in bg-green-50 px-4 py-2 rounded-full shadow-sm text-sm"; 
+                statusEl.className = "font-medium text-checked-in bg-green-50 px-4 py-2 rounded-full shadow-sm text-sm";
             };
 
             ws.onmessage = async (event) => {
                 const envelope = JSON.parse(event.data);
-                
+
                 // UNWRAP the WSEnvelope
-                if (envelope.type !== "webrtc") return; 
+                if (envelope.type !== "webrtc") return;
                 const msg = envelope.payload;
-                
-                const targetRoom = msg.roomId || "1"; 
+
+                const targetRoom = msg.roomId || "1";
 
                 if (msg.type === 'ring') {
+                    CLID = msg.CLID;
                     showIncomingCall(targetRoom);
-                } 
-                else if (msg.type === 'accept') {
+                }
+                if (msg.type === 'accept') {
                     document.getElementById('system-status').innerText = `Connecting to Rm ${targetRoom}...`;
                     if (isCaller) await startWebRTC(true);
                 }
-                else if (msg.type === 'offer') {
+                if (msg.type === 'offer') {
                     await startWebRTC(false);
                     await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-                    
+
                     while (pendingCandidates.length) {
                         await pc.addIceCandidate(pendingCandidates.shift());
                     }
@@ -273,19 +282,20 @@
                     const answer = await pc.createAnswer();
                     await pc.setLocalDescription(answer);
                     // CHANGE THIS LINE:
-                    sendWebRTC({ type: 'answer', sdp: pc.localDescription, roomId: targetRoom });
+                    const reservationRoomId = phoneBook.find(entry => entry.roomId == targetRoom).reservationRoomId;
+                    sendWebRTC({ type: 'answer', sdp: pc.localDescription, roomId: targetRoom, to: reservationRoomId });
                 }
-                else if (msg.type === 'answer' && pc) {
+                if (msg.type === 'answer' && pc) {
                     await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-                    
+
                     // BUG FIX: Process candidates for the caller side
                     while (pendingCandidates.length) {
                         await pc.addIceCandidate(pendingCandidates.shift());
                     }
-                } 
-                else if (msg.type === 'ice') {
+                }
+                if (msg.type === 'ice') {
                     const candidate = new RTCIceCandidate(msg.candidate);
-                    
+
                     // BUG FIX: Only add if remote description is ready, otherwise queue it
                     if (pc && pc.remoteDescription && pc.remoteDescription.type) {
                         await pc.addIceCandidate(candidate);
@@ -293,7 +303,7 @@
                         pendingCandidates.push(candidate);
                     }
                 }
-                else if (msg.type === 'missed' || msg.type === 'end_call') {
+                if (msg.type === 'missed' || msg.type === 'end_call') {
                     endCallUIState(); // Reset the UI
                 }
             };
@@ -328,13 +338,13 @@
 
             // 3. Reset state and refresh the grid to restore buttons
             activeRoomId = null;
-            renderGrid(); 
+            renderGrid();
         }
 
         async function getCallID(to) {
             const session = localStorage.getItem("session");
             const response = await fetch(`${BACKEND_API_SERVER}/admin/api/d/calllog/add?session=${session}&_from=FRONT_DESK&_to=${to}`, {
-                headers : {
+                headers: {
                     "X-CSRF-TOKEN": session,
                 }
             });
@@ -350,27 +360,30 @@
 
         // 2. Wrap outgoing messages in the WSEnvelope
         function sendWebRTC(payload) {
-            payload["CLID"] = CLID??1;
+            payload["CLID"] = CLID ?? 1;
+            console.log("WS STATE:", ws.readyState);
             if (ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({
                     type: "webrtc",
                     payload: payload
                 }));
+            } else {
+                console.error("WS NOT OPEN, state:", ws.readyState);
             }
         }
 
         // 3. Update all your action functions to use sendWebRTC instead of ws.send
-        async function initiateCall(roomId) {
+        async function initiateCall(roomId, reservationRoomId, roomName) {
             isCaller = true;
             activeRoomId = roomId;
-            showActiveCallBanner(roomId, "Ringing...");
+            showActiveCallBanner(roomName, "Ringing...");
 
-            CLID = await getCallID(roomId);
+            CLID = await getCallID(reservationRoomId);
 
-            sendWebRTC({ type: 'ring', roomId: roomId }); 
+            sendWebRTC({ type: 'ring', roomId: roomId });
         }
 
-        function answerCall(roomId) {
+        function answerCall(roomId, reservationRoomId) {
             document.getElementById(`answerBtn-${roomId}`).classList.add('hidden');
             showActiveCallBanner(roomId, "Connecting...");
             sendWebRTC({ type: 'accept', roomId: roomId });
@@ -378,16 +391,18 @@
 
         function showIncomingCall(roomId) {
             activeRoomId = roomId;
+            const roomName = phoneBook.find(entry => entry.roomId == roomId).roomName
+            const guestName = phoneBook.find(entry => entry.roomId == roomId).guestName
             document.getElementById(`callBtn-${roomId}`).classList.add('hidden');
             document.getElementById(`answerBtn-${roomId}`).classList.remove('hidden');
-            document.getElementById('system-status').innerText = `Incoming Call from Rm ${roomId}`;
+            document.getElementById('system-status').innerText = `Incoming Call from ${roomName} - ${guestName}`;
         }
 
-        function showActiveCallBanner(roomId, text) {
+        function showActiveCallBanner(roomName, text) {
             const banner = document.getElementById('active-call-banner');
             banner.classList.remove('hidden');
-            banner.classList.add('flex'); 
-            document.getElementById('active-call-info').innerText = `Room ${roomId} - ${text}`;
+            banner.classList.add('flex');
+            document.getElementById('active-call-info').innerText = `${roomName} - ${text}`;
         }
 
         function endCall() {
@@ -395,33 +410,35 @@
             if (localStream) localStream.getTracks().forEach(track => track.stop());
             pc = null;
             pendingCandidates = [];
-            
+
             const banner = document.getElementById('active-call-banner');
             banner.classList.add('hidden');
             banner.classList.remove('flex');
-            
-            renderGrid(); 
+
+            renderGrid();
             document.getElementById('system-status').innerText = "System Online";
-            
+
             // FIX: Use the helper so the backend actually routes this
-            sendWebRTC({ type: 'end_call', roomId: activeRoomId }); 
-            
+            sendWebRTC({ type: 'end_call', roomId: activeRoomId });
+
             activeRoomId = null;
         }
 
         async function startWebRTC(createOffer) {
             pc = new RTCPeerConnection(rtcConfig);
-            
+
             pc.onicecandidate = (e) => {
                 if (e.candidate) {
-                    sendWebRTC({ 
-                        type: 'ice', 
-                        candidate: e.candidate, 
-                        roomId: activeRoomId 
+                    const reservationRoomId = phoneBook.find(entry => entry.roomId == activeRoomId).reservationRoomId;
+                    sendWebRTC({
+                        type: 'ice',
+                        candidate: e.candidate,
+                        roomId: activeRoomId,
+                        to: reservationRoomId,
                     });
                 }
             };
-            
+
             pc.ontrack = (e) => {
                 document.getElementById('remoteAudio').srcObject = e.streams[0];
             };
@@ -429,6 +446,9 @@
             pc.oniceconnectionstatechange = () => {
                 if (pc.iceConnectionState === 'connected') {
                     showActiveCallBanner(activeRoomId, "Call Connected");
+                }
+                else {
+                    console.log("UNHANDELED pc.iceConnectionState", pc.iceConnectionState);
                 }
             };
 
@@ -438,10 +458,10 @@
             if (createOffer) {
                 const offer = await pc.createOffer();
                 await pc.setLocalDescription(offer);
-                sendWebRTC({ 
-                    type: 'offer', 
-                    sdp: pc.localDescription, 
-                    roomId: activeRoomId 
+                sendWebRTC({
+                    type: 'offer',
+                    sdp: pc.localDescription,
+                    roomId: activeRoomId
                 });
             }
         }
@@ -472,13 +492,13 @@
             try {
                 const statusEl = document.getElementById('system-status');
                 statusEl.innerText = "Authenticating...";
-                
+
                 const session = setupAuthSession();
 
                 const data = await loadRequiredData();
                 phoneBook = data.phoneBook;
                 const history = data.history;
-                
+
                 renderGrid();
                 renderHistory(history);
                 setupWebSocket(session);
@@ -494,4 +514,5 @@
         window.onload = initializeApp;
     </script>
 </body>
+
 </html>
