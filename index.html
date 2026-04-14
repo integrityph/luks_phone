@@ -84,8 +84,7 @@
         async function fetchReservationRoom() {
             const session = localStorage.getItem("session");
             const todayUTC = new Date().toISOString().split('T')[0];
-
-            const response = await fetch(`${BACKEND_API_SERVER}/admin/api/d/reservationroom?session=${session}&$preload=1&$join=reservations__reservation_rooms.reservation_id__reservations.id&reservations.check_in_date__gte=${todayUTC}&reservations.status=1`);
+            const response = await fetch(`${BACKEND_API_SERVER}/admin/api/d/reservationroom?session=${session}&$preload=1&$join=reservations__reservation_rooms.reservation_id__reservations.id&reservations.check_out_date__gte=${todayUTC}&reservations.status=1`);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -98,8 +97,7 @@
         async function fetchReservation() {
             const session = localStorage.getItem("session");
             const todayUTC = new Date().toISOString().split('T')[0];
-
-            const response = await fetch(`${BACKEND_API_SERVER}/admin/api/d/reservation?session=${session}&$preload=1&check_in_date__gte=${todayUTC}&status=1`);
+            const response = await fetch(`${BACKEND_API_SERVER}/admin/api/d/reservation?session=${session}&$preload=1&check_out_date__gte=${todayUTC}&status=1`);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -130,6 +128,7 @@
 
                 const phoneBook = rooms.result.map(room => {
                     const reservationRoom = reservationRooms.result.find(reservationRoom => reservationRoom.RoomID == room.ID) ?? null;
+
                     const reservation = reservationRoom ? reservations.result.find(entry => entry.ID == reservationRoom.ReservationID) : null;
                     return {
                         roomId: room.ID.toString(),
