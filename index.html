@@ -19,10 +19,17 @@
             }
         }
     </script>
+    <link href="https://cdn.jsdelivr.net/npm/vanilla-sonner@latest/dist/vanilla-sonner.min.css" rel="stylesheet" />
+
+    <script src="https://cdn.jsdelivr.net/npm/vanilla-sonner@latest/dist/vanilla-sonner.umd.min.js" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/moment.min.js"></script>
+    <!-- If you're using ES Modules -->
+    <script src="https://cdn.jsdelivr.net/npm/vanilla-sonner@latest/dist/vanilla-sonner.es.min.js" type="module"></script>
 </head>
 
-<body class="bg-gray-100 text-gray-800 flex gap-6 p-6 min-h-screen font-sans">
-
+    <body class="bg-gray-100 text-gray-800 flex gap-6 p-6 min-h-screen font-sans">
+        <ol id="sonner-toast-container" position="bottom-right" max-toasts="3" rich-colors="true" theme="light">
+        </ol>
     <div class="flex-[3]">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-gray-800 tracking-tight">Front Desk Switchboard</h2>
@@ -64,12 +71,13 @@
     <audio id="remoteAudio" autoplay class="hidden"></audio>
 
     <script>
+        // toast.success("works")
         // --- 1. MOCK DATA APIS ---
         async function fetchRoom() {
             const session = localStorage.getItem("session");
 
             // 1. Await the network request
-            const response = await fetch(`${BACKEND_API_SERVER}/admin/api/d/room?session=${session}&$preload=1`);
+            const response = await fetch(`${BACKEND_API_SERVER}/admin/api/d/room?session=${session}&$preload=1&$order=number`);
 
             // Optional but highly recommended: Check if the request actually succeeded 
             // (fetch doesn't throw an error for 404s or 500s natively)
@@ -108,12 +116,48 @@
         }
 
         async function fetchCallHistory() {
-            return new Promise(resolve => setTimeout(() => {
-                resolve([
-                    { callId: "c1", roomId: "3", type: "missed", time: "10:15 AM" },
-                    { callId: "c2", roomId: "1", type: "incoming", time: "09:30 AM" },
-                ]);
-            }, 500));
+            const session = localStorage.getItem("session");
+
+            const res = await fetch(
+                `${BACKEND_API_SERVER}/admin/api/d/calllog?session=${session}&$order=-id&$limit=15000&$preload=1`
+            );
+
+            if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+
+            const { result: data } = await res.json();
+
+            //  Create lookup map (O(1) instead of find)
+
+            //  Create formatter once
+            const formatter = new Intl.DateTimeFormat("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true
+            });
+
+            return data.map(log => {
+                const reservationRoomID =
+                    log.From === "FRONT_DESK" ? log.To : log.From;
+
+                // const room = roomMap[Number(reservationRoomID)];
+
+                return {
+                    callID: log.ID,
+                    from: log.From,
+                    reservationRoomId: reservationRoomID,
+                    roomNumber: log?.Room?.Number || "",
+                    roomId: log?.RoomID || "",
+                    roomName: `${log?.RoomModel?.Name} ${log?.Room?.Number}` || "",
+                    type: log.Status,
+                    time: formatter.format(new Date(log.Date)),
+                    rawDate: log.Date,
+                };
+            });
         }
 
         async function loadRequiredData() {
@@ -127,9 +171,10 @@
                 ]);
 
                 const phoneBook = rooms.result.map(room => {
-                    const reservationRoom = reservationRooms.result.find(reservationRoom => reservationRoom.RoomID == room.ID) ?? null;
+                    const reservationRoom = reservationRooms.result.find(reservationRoom =>  reservationRoom.RoomID == room.ID) ?? null;
 
                     const reservation = reservationRoom ? reservations.result.find(entry => entry.ID == reservationRoom.ReservationID) : null;
+
                     return {
                         roomId: room.ID.toString(),
                         reservationRoomId: reservationRoom ? reservationRoom.ID.toString() : "0",
@@ -139,7 +184,7 @@
                     };
                 });
 
-                console.log("Both loaded successfully:", phoneBook, history);
+                // console.log("Both loaded successfully:", phoneBook, history);
                 return { phoneBook, history };
 
             } catch (error) {
@@ -208,24 +253,56 @@
             });
         }
 
+        function humanizeDate(dateStr) {
+            const m = moment(dateStr, "YYYY-MM-DD");
+
+            const now = moment();
+
+            const diffDays = now.startOf('day').diff(m.startOf('day'), 'days');
+
+            if (diffDays === 0) return "Today";
+            if (diffDays === 1) return "Yesterday";
+
+            // For recent dates → "3 days ago", "a week ago"
+            if (diffDays < 30) return m.fromNow();
+
+            // Older dates → formatted
+            return m.format("MMM D, YYYY");
+        }
+
         function renderHistory(history) {
             const list = document.getElementById('call-history-list');
             list.innerHTML = '';
+            let lastDate = "";
             history.forEach(log => {
                 const item = document.createElement('div');
-                const isMissed = log.type === 'missed';
 
-                item.className = `py-3 border-b border-gray-50 flex justify-between items-center text-sm ${isMissed ? 'text-dnd font-semibold' : 'text-gray-600 font-medium'}`;
+                const isMissed = log.type === 4;
 
-                item.innerHTML = `
-                    <span>Rm ${log.roomId} &middot; ${log.time}</span>
-                    ${isMissed ? `<button onclick="initiateCall('${log.roomId}')" class="bg-red-50 text-dnd hover:bg-red-100 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">Call Back</button>` : ''}
-                `;
+                item.className = `py-3 border-b border-gray-50 justify-between items-center text-sm ${isMissed ? 'text-dnd font-semibold' : 'text-gray-600 font-medium'}`;
+
+                const datePart = log.rawDate.substring(0,10);
+                item.innerHTML = "";
+                if (lastDate != datePart) {
+                    if (lastDate != "") {
+                        item.innerHTML = `<hr class="mb-2 bg-black-200">`;
+                    }
+                    lastDate = datePart;
+                    const humanizedDate = humanizeDate(datePart);
+                    item.innerHTML += `<div class="text-neutral-400 text-sm mb-2">${humanizedDate} - ${datePart}</div>`;
+                }
+                item.innerHTML += `<div class="flex items-center justify-between">
+                <span>Room ${log.roomNumber} &middot; ${log.time}</span>
+                ${isMissed ? `<button onclick="initiateCall('${log.roomId}', '${log.reservationRoomId}', '${log.roomName}')" class="bg-red-50 text-dnd hover:bg-red-100 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">${log.from == "FRONT_DESK" ? "Call Again" : "Call Back"}</button>` : ''}
+                </div>`;
                 list.appendChild(item);
             });
         }
 
         // --- 4. WEBRTC & SIGNALING LOGIC ---
+        const STATUS_IDLE = 1;
+        const STATUS_RINGOUT = 2;
+        const STATUS_ONCALL = 3;
         const BACKEND_WS_SERVER = "ws://192.168.149.60:8080";
         const BACKEND_API_SERVER = "http://192.168.149.60:8080";
         const TURN_SERVER = "192.168.149.60:3478";
@@ -234,6 +311,7 @@
         let localStream;
         let isCaller = false;
         let CLID;
+        let callStatus = STATUS_IDLE;
 
         // BUG FIX: The ICE Candidate Queue
         let pendingCandidates = [];
@@ -253,6 +331,24 @@
                 statusEl.className = "font-medium text-checked-in bg-green-50 px-4 py-2 rounded-full shadow-sm text-sm";
             };
 
+            ws.onclose = () => {
+                console.warn("WS disconnected. Reconnecting...");
+
+                const statusEl = document.getElementById('system-status');
+                statusEl.innerText = "Reconnecting...";
+                statusEl.className = "font-medium text-yellow-600 bg-yellow-50 px-4 py-2 rounded-full shadow-sm text-sm";
+
+                // exponential backoff
+                setTimeout(() => {
+                    setupWebSocket(session);
+                }, 1000);
+            };
+
+            ws.onerror = (err) => {
+                console.error("WS error:", err);
+                ws.close(); // force onclose to trigger reconnect
+            };
+
             ws.onmessage = async (event) => {
                 const envelope = JSON.parse(event.data);
 
@@ -263,14 +359,26 @@
                 const targetRoom = msg.roomId || "1";
 
                 if (msg.type === 'ring') {
+                    if (callStatus != STATUS_IDLE) {
+                        return;
+                    }
                     CLID = msg.CLID;
+                    console.log("msg:", msg)
                     showIncomingCall(targetRoom);
                 }
                 if (msg.type === 'accept') {
-                    document.getElementById('system-status').innerText = `Connecting to Rm ${targetRoom}...`;
+                    if (callStatus != STATUS_RINGOUT) {
+                        endCallUIState();
+                        return;
+                    }
+                    callStatus = STATUS_ONCALL;
+                    document.getElementById('system-status').innerText = `Connecting to Room ${targetRoom}...`;
                     if (isCaller) await startWebRTC(true);
                 }
                 if (msg.type === 'offer') {
+                    if (callStatus != STATUS_ONCALL) {
+                        return;
+                    }
                     await startWebRTC(false);
                     await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
 
@@ -282,9 +390,12 @@
                     await pc.setLocalDescription(answer);
                     // CHANGE THIS LINE:
                     const reservationRoomId = phoneBook.find(entry => entry.roomId == targetRoom).reservationRoomId;
-                    sendWebRTC({ type: 'answer', sdp: pc.localDescription, roomId: targetRoom, to: reservationRoomId });
+                    sendWebRTC({ type: 'answer', sdp: pc.localDescription, roomId: targetRoom, to: reservationRoomId, wsSession: "FRONT_DESK" });
                 }
                 if (msg.type === 'answer' && pc) {
+                    if (callStatus != STATUS_ONCALL) {
+                        return;
+                    }
                     await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
 
                     // BUG FIX: Process candidates for the caller side
@@ -293,6 +404,9 @@
                     }
                 }
                 if (msg.type === 'ice') {
+                    if (callStatus != STATUS_ONCALL) {
+                        return;
+                    }
                     const candidate = new RTCIceCandidate(msg.candidate);
 
                     // BUG FIX: Only add if remote description is ready, otherwise queue it
@@ -302,13 +416,28 @@
                         pendingCandidates.push(candidate);
                     }
                 }
+                if (msg.type === 'answered_elsewhere') {
+                    if (callStatus == STATUS_IDLE) {
+                        endCallUIState(); // Reset the UI
+                    }
+                    
+                }
                 if (msg.type === 'missed' || msg.type === 'end_call') {
                     endCallUIState(); // Reset the UI
                 }
+
+                if (msg.type === 'timeout') {
+                    toast.error("The call was terminated due to timeout.", { duration: 3000});
+                    endCallUIState(); // Reset the UI
+                }
+
+                let history = await fetchCallHistory()
+                renderHistory(history)
             };
         }
 
         function endCallUIState() {
+            callStatus = STATUS_IDLE;
             // 1. WebRTC Cleanup
             if (pc) {
                 pc.close();
@@ -360,7 +489,7 @@
         // 2. Wrap outgoing messages in the WSEnvelope
         function sendWebRTC(payload) {
             payload["CLID"] = CLID ?? 1;
-            console.log("WS STATE:", ws.readyState);
+            // console.log("WS STATE:", ws.readyState);
             if (ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({
                     type: "webrtc",
@@ -378,6 +507,7 @@
             showActiveCallBanner(roomName, "Ringing...");
 
             CLID = await getCallID(reservationRoomId);
+            callStatus = STATUS_RINGOUT;
 
             sendWebRTC({ type: 'ring', roomId: roomId });
         }
@@ -386,6 +516,7 @@
             document.getElementById(`answerBtn-${roomId}`).classList.add('hidden');
             showActiveCallBanner(roomId, "Connecting...");
             sendWebRTC({ type: 'accept', roomId: roomId });
+            callStatus = STATUS_ONCALL;
         }
 
         function showIncomingCall(roomId) {
@@ -421,6 +552,7 @@
             sendWebRTC({ type: 'end_call', roomId: activeRoomId });
 
             activeRoomId = null;
+            callStatus = STATUS_IDLE;
         }
 
         async function startWebRTC(createOffer) {
