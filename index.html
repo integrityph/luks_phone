@@ -305,7 +305,7 @@
     const STATUS_ONCALL = 3;
     const BACKEND_WS_SERVER = "ws://192.168.149.60:8080";
     const BACKEND_API_SERVER = "http://192.168.149.60:8080";
-    const TURN_SERVER = "192.168.149.60:3478";
+    const TURN_SERVER = "10.10.10.10:3478";
     let ws;
     let pc;
     let localStream;
@@ -316,9 +316,21 @@
     // BUG FIX: The ICE Candidate Queue
     let pendingCandidates = [];
 
+    // const rtcConfig = {
+    //   iceServers: [{ urls: `turn:${TURN_SERVER}?transport=tcp`, username: 'guest', credential: 'password' }],
+    //   iceTransportPolicy: 'relay',
+    // };
+
+    // const rtcConfig = {
+    //   iceServers: [
+    //     { urls: `stun:${TURN_SERVER}?transport=udp`,  username: 'guest', credential: 'password' }, // STUN for UDP P2P
+    //     // { urls: `turn:${TURN_SERVER}?transport=tcp`, username: 'guest', credential: 'password' }
+    // ],
+    //   iceTransportPolicy: 'all',
+    // };
     const rtcConfig = {
-      iceServers: [{ urls: `turn:${TURN_SERVER}?transport=tcp`, username: 'guest', credential: 'password' }],
-      iceTransportPolicy: 'relay',
+      iceServers: [{ urls: `stun:${TURN_SERVER}`, username: 'guest', credential: 'password' }],
+      iceTransportPolicy: 'all',
     };
 
     function setupWebSocket(session) {
