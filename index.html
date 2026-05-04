@@ -2,240 +2,240 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Front Desk Console</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        vacant: '#9ca3af',      // Gray-400
-                        'checked-in': '#10b981', // Emerald-500
-                        dnd: '#ef4444',         // Red-500
-                    }
-                }
-            }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hotel Front Desk Console</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            vacant: '#9ca3af',      // Gray-400
+            'checked-in': '#10b981', // Emerald-500
+            dnd: '#ef4444',         // Red-500
+          }
         }
-    </script>
-    <link href="https://cdn.jsdelivr.net/npm/vanilla-sonner@latest/dist/vanilla-sonner.min.css" rel="stylesheet" />
+      }
+    }
+  </script>
+  <link href="https://cdn.jsdelivr.net/npm/vanilla-sonner@latest/dist/vanilla-sonner.min.css" rel="stylesheet" />
 
-    <script src="https://cdn.jsdelivr.net/npm/vanilla-sonner@latest/dist/vanilla-sonner.umd.min.js" type="module"></script>
-    <script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/moment.min.js"></script>
-    <!-- If you're using ES Modules -->
-    <script src="https://cdn.jsdelivr.net/npm/vanilla-sonner@latest/dist/vanilla-sonner.es.min.js" type="module"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanilla-sonner@latest/dist/vanilla-sonner.umd.min.js"
+    type="module"></script>
+  <script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/moment.min.js"></script>
+  <!-- If you're using ES Modules -->
+  <script src="https://cdn.jsdelivr.net/npm/vanilla-sonner@latest/dist/vanilla-sonner.es.min.js" type="module"></script>
 </head>
 
-    <body class="bg-gray-100 text-gray-800 flex gap-6 p-6 min-h-screen font-sans">
-        <ol id="sonner-toast-container" position="bottom-right" max-toasts="3" rich-colors="true" theme="light">
-        </ol>
-    <div class="flex-[3]">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold text-gray-800 tracking-tight">Front Desk Switchboard</h2>
-            <div id="system-status" class="font-medium text-gray-500 bg-white px-4 py-2 rounded-full shadow-sm text-sm">
-                System Loading...</div>
-        </div>
-
-        <div id="active-call-banner"
-            class="hidden bg-gray-900 text-white px-6 py-4 rounded-xl mb-6 justify-between items-center shadow-lg ring-1 ring-black/5">
-            <div class="flex items-center gap-3">
-                <span class="relative flex h-3 w-3">
-                    <span
-                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-checked-in opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-3 w-3 bg-checked-in"></span>
-                </span>
-                <span id="active-call-info" class="font-medium tracking-wide">Active Call: Room --</span>
-            </div>
-            <button id="globalEndBtn" onclick="endCall()"
-                class="bg-dnd hover:bg-red-600 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 shadow-sm flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd"
-                        d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z"
-                        clip-rule="evenodd" />
-                </svg>
-                End Call
-            </button>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5" id="room-grid">
-        </div>
+<body class="bg-gray-100 text-gray-800 flex gap-6 p-6 min-h-screen font-sans">
+  <ol id="sonner-toast-container" position="bottom-right" max-toasts="3" rich-colors="true" theme="light">
+  </ol>
+  <div class="flex-[3]">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-gray-800 tracking-tight">Front Desk Switchboard</h2>
+      <div id="system-status" class="font-medium text-gray-500 bg-white px-4 py-2 rounded-full shadow-sm text-sm">
+        System Loading...</div>
     </div>
 
-    <div class="flex-1 bg-white p-6 rounded-2xl shadow-sm h-[calc(100vh-48px)] overflow-y-auto ring-1 ring-gray-200">
-        <h3 class="text-lg font-bold border-b border-gray-100 pb-4 mb-4 text-gray-800 tracking-tight">Call History</h3>
-        <div id="call-history-list" class="flex flex-col gap-2">
-        </div>
+    <div id="active-call-banner"
+      class="hidden bg-gray-900 text-white px-6 py-4 rounded-xl mb-6 justify-between items-center shadow-lg ring-1 ring-black/5">
+      <div class="flex items-center gap-3">
+        <span class="relative flex h-3 w-3">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-checked-in opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-checked-in"></span>
+        </span>
+        <span id="active-call-info" class="font-medium tracking-wide">Active Call: Room --</span>
+      </div>
+      <button id="globalEndBtn" onclick="endCall()"
+        class="bg-dnd hover:bg-red-600 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 shadow-sm flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd"
+            d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z"
+            clip-rule="evenodd" />
+        </svg>
+        End Call
+      </button>
     </div>
 
-    <audio id="remoteAudio" autoplay class="hidden"></audio>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5" id="room-grid">
+    </div>
+  </div>
 
-    <script>
-        // toast.success("works")
-        // --- 1. MOCK DATA APIS ---
-        async function fetchRoom() {
-            const session = localStorage.getItem("session");
+  <div class="flex-1 bg-white p-6 rounded-2xl shadow-sm h-[calc(100vh-48px)] overflow-y-auto ring-1 ring-gray-200">
+    <h3 class="text-lg font-bold border-b border-gray-100 pb-4 mb-4 text-gray-800 tracking-tight">Call History</h3>
+    <div id="call-history-list" class="flex flex-col gap-2">
+    </div>
+  </div>
 
-            // 1. Await the network request
-            const response = await fetch(`${BACKEND_API_SERVER}/admin/api/d/room?session=${session}&$preload=1&$order=number`);
+  <audio id="remoteAudio" autoplay class="hidden"></audio>
 
-            // Optional but highly recommended: Check if the request actually succeeded 
-            // (fetch doesn't throw an error for 404s or 500s natively)
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+  <script>
+    // toast.success("works")
+    // --- 1. MOCK DATA APIS ---
+    async function fetchRoom() {
+      const session = localStorage.getItem("session");
 
-            // 2. Await and return the parsed JSON
-            return await response.json();
+      // 1. Await the network request
+      const response = await fetch(`${BACKEND_API_SERVER}/admin/api/d/room?session=${session}&$preload=1&$order=number`);
+
+      // Optional but highly recommended: Check if the request actually succeeded 
+      // (fetch doesn't throw an error for 404s or 500s natively)
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // 2. Await and return the parsed JSON
+      return await response.json();
+    }
+
+    async function fetchReservationRoom() {
+      const session = localStorage.getItem("session");
+      const todayUTC = new Date().toISOString().split('T')[0];
+      const response = await fetch(`${BACKEND_API_SERVER}/admin/api/d/reservationroom?session=${session}&$preload=1&$join=reservations__reservation_rooms.reservation_id__reservations.id&reservations.check_out_date__gte=${todayUTC}&reservations.status=1`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // 2. Await and return the parsed JSON
+      return await response.json();
+    }
+
+    async function fetchReservation() {
+      const session = localStorage.getItem("session");
+      const todayUTC = new Date().toISOString().split('T')[0];
+      const response = await fetch(`${BACKEND_API_SERVER}/admin/api/d/reservation?session=${session}&$preload=1&check_out_date__gte=${todayUTC}&status=1`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // 2. Await and return the parsed JSON
+      return await response.json();
+    }
+
+    async function fetchCallHistory() {
+      const session = localStorage.getItem("session");
+
+      const res = await fetch(
+        `${BACKEND_API_SERVER}/admin/api/d/calllog?session=${session}&$order=-id&$limit=15000&$preload=1`
+      );
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
+      const { result: data } = await res.json();
+
+      //  Create lookup map (O(1) instead of find)
+
+      //  Create formatter once
+      const formatter = new Intl.DateTimeFormat("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+      });
+
+      return data.map(log => {
+        const reservationRoomID =
+          log.From.includes("FRONT_DESK") ? log.To : log.From;
+
+        // const room = roomMap[Number(reservationRoomID)];
+
+        return {
+          callID: log.ID,
+          from: log.From,
+          reservationRoomId: reservationRoomID,
+          roomNumber: log?.Room?.Number || "",
+          roomId: log?.RoomID || "",
+          roomName: `${log?.RoomModel?.Name} ${log?.Room?.Number}` || "",
+          type: log.Status,
+          time: formatter.format(new Date(log.Date)),
+          rawDate: log.Date,
+        };
+      });
+    }
+
+    async function loadRequiredData() {
+      try {
+        // Run both fetches at the exact same time
+        const [rooms, reservations, reservationRooms, history] = await Promise.all([
+          fetchRoom(),
+          fetchReservation(),
+          fetchReservationRoom(),
+          fetchCallHistory()
+        ]);
+
+        const phoneBook = rooms.result.map(room => {
+          const reservationRoom = reservationRooms.result.find(reservationRoom => reservationRoom.RoomID == room.ID) ?? null;
+
+          const reservation = reservationRoom ? reservations.result.find(entry => entry.ID == reservationRoom.ReservationID) : null;
+
+          return {
+            roomId: room.ID.toString(),
+            reservationRoomId: reservationRoom ? reservationRoom.ID.toString() : "0",
+            roomName: `${room.RoomModel.Name} ${room.Number}`,
+            guestName: reservation ? `${reservation.Guest.FirstName} ${reservation.Guest.LastName}` : "Vacant",
+            status: reservation ? "checked-in" : "vacant",
+          };
+        });
+
+        // console.log("Both loaded successfully:", phoneBook, history);
+        return { phoneBook, history };
+
+      } catch (error) {
+        // If EITHER fetchPhoneBook or fetchCallHistory fails, it immediately jumps here
+        console.error("Critical failure loading initial data:", error);
+      }
+    }
+
+    // --- 2. GLOBAL STATE ---
+    let phoneBook = [];
+    let activeRoomId = null;
+
+    // --- 3. UI RENDERING ---
+    function renderGrid() {
+      const grid = document.getElementById('room-grid');
+      grid.innerHTML = '';
+
+      phoneBook.forEach(room => {
+        const card = document.createElement('div');
+
+        const isCallable = room.status === 'checked-in';
+        const isDND = room.status === 'dnd';
+
+        // Card styling based on state (Gray out if not callable)
+        const borderClass = room.status === 'checked-in' ? 'border-checked-in' :
+          room.status === 'dnd' ? 'border-dnd' : 'border-vacant';
+
+        // Dim the whole card if it's vacant or DND
+        const cardOpacityClass = isCallable ? 'bg-white shadow-sm' : 'bg-gray-50 opacity-60 grayscale-[0.5]';
+
+        card.className = `p-5 rounded-2xl flex flex-col items-center text-center border-t-[6px] ${borderClass} ${cardOpacityClass} transition-all`;
+        card.id = `card-${room.roomId}`;
+
+        // Button Styling
+        let btnContent = '';
+        let btnClasses = '';
+
+        const phoneIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg>`;
+
+        if (isCallable) {
+          btnContent = `${phoneIconSVG} <span>Call Room</span>`;
+          btnClasses = 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow active:scale-95';
+        } else if (isDND) {
+          btnContent = `<span>Do Not Disturb</span>`;
+          btnClasses = 'bg-gray-200 text-gray-500 cursor-not-allowed';
+        } else {
+          btnContent = `<span>Vacant</span>`;
+          btnClasses = 'bg-gray-200 text-gray-400 cursor-not-allowed';
         }
 
-        async function fetchReservationRoom() {
-            const session = localStorage.getItem("session");
-            const todayUTC = new Date().toISOString().split('T')[0];
-            const response = await fetch(`${BACKEND_API_SERVER}/admin/api/d/reservationroom?session=${session}&$preload=1&$join=reservations__reservation_rooms.reservation_id__reservations.id&reservations.check_out_date__gte=${todayUTC}&reservations.status=1`);
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            // 2. Await and return the parsed JSON
-            return await response.json();
-        }
-
-        async function fetchReservation() {
-            const session = localStorage.getItem("session");
-            const todayUTC = new Date().toISOString().split('T')[0];
-            const response = await fetch(`${BACKEND_API_SERVER}/admin/api/d/reservation?session=${session}&$preload=1&check_out_date__gte=${todayUTC}&status=1`);
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            // 2. Await and return the parsed JSON
-            return await response.json();
-        }
-
-        async function fetchCallHistory() {
-            const session = localStorage.getItem("session");
-
-            const res = await fetch(
-                `${BACKEND_API_SERVER}/admin/api/d/calllog?session=${session}&$order=-id&$limit=15000&$preload=1`
-            );
-
-            if (!res.ok) {
-                throw new Error(`HTTP error! status: ${res.status}`);
-            }
-
-            const { result: data } = await res.json();
-
-            //  Create lookup map (O(1) instead of find)
-
-            //  Create formatter once
-            const formatter = new Intl.DateTimeFormat("en-US", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-                hour: "numeric",
-                minute: "2-digit",
-                hour12: true
-            });
-
-            return data.map(log => {
-                const reservationRoomID =
-                    log.From === "FRONT_DESK" ? log.To : log.From;
-
-                // const room = roomMap[Number(reservationRoomID)];
-
-                return {
-                    callID: log.ID,
-                    from: log.From,
-                    reservationRoomId: reservationRoomID,
-                    roomNumber: log?.Room?.Number || "",
-                    roomId: log?.RoomID || "",
-                    roomName: `${log?.RoomModel?.Name} ${log?.Room?.Number}` || "",
-                    type: log.Status,
-                    time: formatter.format(new Date(log.Date)),
-                    rawDate: log.Date,
-                };
-            });
-        }
-
-        async function loadRequiredData() {
-            try {
-                // Run both fetches at the exact same time
-                const [rooms, reservations, reservationRooms, history] = await Promise.all([
-                    fetchRoom(),
-                    fetchReservation(),
-                    fetchReservationRoom(),
-                    fetchCallHistory()
-                ]);
-
-                const phoneBook = rooms.result.map(room => {
-                    const reservationRoom = reservationRooms.result.find(reservationRoom =>  reservationRoom.RoomID == room.ID) ?? null;
-
-                    const reservation = reservationRoom ? reservations.result.find(entry => entry.ID == reservationRoom.ReservationID) : null;
-
-                    return {
-                        roomId: room.ID.toString(),
-                        reservationRoomId: reservationRoom ? reservationRoom.ID.toString() : "0",
-                        roomName: `${room.RoomModel.Name} ${room.Number}`,
-                        guestName: reservation ? `${reservation.Guest.FirstName} ${reservation.Guest.LastName}` : "Vacant",
-                        status: reservation ? "checked-in" : "vacant",
-                    };
-                });
-
-                // console.log("Both loaded successfully:", phoneBook, history);
-                return { phoneBook, history };
-
-            } catch (error) {
-                // If EITHER fetchPhoneBook or fetchCallHistory fails, it immediately jumps here
-                console.error("Critical failure loading initial data:", error);
-            }
-        }
-
-        // --- 2. GLOBAL STATE ---
-        let phoneBook = [];
-        let activeRoomId = null;
-
-        // --- 3. UI RENDERING ---
-        function renderGrid() {
-            const grid = document.getElementById('room-grid');
-            grid.innerHTML = '';
-
-            phoneBook.forEach(room => {
-                const card = document.createElement('div');
-
-                const isCallable = room.status === 'checked-in';
-                const isDND = room.status === 'dnd';
-
-                // Card styling based on state (Gray out if not callable)
-                const borderClass = room.status === 'checked-in' ? 'border-checked-in' :
-                    room.status === 'dnd' ? 'border-dnd' : 'border-vacant';
-
-                // Dim the whole card if it's vacant or DND
-                const cardOpacityClass = isCallable ? 'bg-white shadow-sm' : 'bg-gray-50 opacity-60 grayscale-[0.5]';
-
-                card.className = `p-5 rounded-2xl flex flex-col items-center text-center border-t-[6px] ${borderClass} ${cardOpacityClass} transition-all`;
-                card.id = `card-${room.roomId}`;
-
-                // Button Styling
-                let btnContent = '';
-                let btnClasses = '';
-
-                const phoneIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg>`;
-
-                if (isCallable) {
-                    btnContent = `${phoneIconSVG} <span>Call Room</span>`;
-                    btnClasses = 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow active:scale-95';
-                } else if (isDND) {
-                    btnContent = `<span>Do Not Disturb</span>`;
-                    btnClasses = 'bg-gray-200 text-gray-500 cursor-not-allowed';
-                } else {
-                    btnContent = `<span>Vacant</span>`;
-                    btnClasses = 'bg-gray-200 text-gray-400 cursor-not-allowed';
-                }
-
-                card.innerHTML = `
+        card.innerHTML = `
                     <div class="text-2xl font-bold text-gray-800 mb-1 tracking-tight">${room.roomName}</div>
                     <div class="text-sm font-medium text-gray-500 mb-5 min-h-[1.25rem]">${room.guestName}</div>
                     
@@ -249,401 +249,448 @@
                         ${btnContent}
                     </button>
                 `;
-                grid.appendChild(card);
-            });
+        grid.appendChild(card);
+      });
+    }
+
+    function humanizeDate(dateStr) {
+      const m = moment(dateStr, "YYYY-MM-DD");
+
+      const now = moment();
+
+      const diffDays = now.startOf('day').diff(m.startOf('day'), 'days');
+
+      if (diffDays === 0) return "Today";
+      if (diffDays === 1) return "Yesterday";
+
+      // For recent dates → "3 days ago", "a week ago"
+      if (diffDays < 30) return m.fromNow();
+
+      // Older dates → formatted
+      return m.format("MMM D, YYYY");
+    }
+
+    function renderHistory(history) {
+      const list = document.getElementById('call-history-list');
+      list.innerHTML = '';
+      let lastDate = "";
+      history.forEach(log => {
+        const item = document.createElement('div');
+
+        const isMissed = log.type === 4;
+
+        item.className = `py-3 border-b border-gray-50 justify-between items-center text-sm ${isMissed ? 'text-dnd font-semibold' : 'text-gray-600 font-medium'}`;
+
+        const datePart = log.rawDate.substring(0, 10);
+        item.innerHTML = "";
+        if (lastDate != datePart) {
+          if (lastDate != "") {
+            item.innerHTML = `<hr class="mb-2 bg-black-200">`;
+          }
+          lastDate = datePart;
+          const humanizedDate = humanizeDate(datePart);
+          item.innerHTML += `<div class="text-neutral-400 text-sm mb-2">${humanizedDate} - ${datePart}</div>`;
         }
-
-        function humanizeDate(dateStr) {
-            const m = moment(dateStr, "YYYY-MM-DD");
-
-            const now = moment();
-
-            const diffDays = now.startOf('day').diff(m.startOf('day'), 'days');
-
-            if (diffDays === 0) return "Today";
-            if (diffDays === 1) return "Yesterday";
-
-            // For recent dates → "3 days ago", "a week ago"
-            if (diffDays < 30) return m.fromNow();
-
-            // Older dates → formatted
-            return m.format("MMM D, YYYY");
-        }
-
-        function renderHistory(history) {
-            const list = document.getElementById('call-history-list');
-            list.innerHTML = '';
-            let lastDate = "";
-            history.forEach(log => {
-                const item = document.createElement('div');
-
-                const isMissed = log.type === 4;
-
-                item.className = `py-3 border-b border-gray-50 justify-between items-center text-sm ${isMissed ? 'text-dnd font-semibold' : 'text-gray-600 font-medium'}`;
-
-                const datePart = log.rawDate.substring(0,10);
-                item.innerHTML = "";
-                if (lastDate != datePart) {
-                    if (lastDate != "") {
-                        item.innerHTML = `<hr class="mb-2 bg-black-200">`;
-                    }
-                    lastDate = datePart;
-                    const humanizedDate = humanizeDate(datePart);
-                    item.innerHTML += `<div class="text-neutral-400 text-sm mb-2">${humanizedDate} - ${datePart}</div>`;
-                }
-                item.innerHTML += `<div class="flex items-center justify-between">
+        item.innerHTML += `<div class="flex items-center justify-between">
                 <span>Room ${log.roomNumber} &middot; ${log.time}</span>
-                ${isMissed ? `<button onclick="initiateCall('${log.roomId}', '${log.reservationRoomId}', '${log.roomName}')" class="bg-red-50 text-dnd hover:bg-red-100 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">${log.from == "FRONT_DESK" ? "Call Again" : "Call Back"}</button>` : ''}
+                ${isMissed ? `<button onclick="initiateCall('${log.roomId}', '${log.reservationRoomId}', '${log.roomName}')" class="bg-red-50 text-dnd hover:bg-red-100 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">${log.from.includes("FRONT_DESK") ? "Call Again" : "Call Back"}</button>` : ''}
                 </div>`;
-                list.appendChild(item);
-            });
+        list.appendChild(item);
+      });
+    }
+
+    // --- 4. WEBRTC & SIGNALING LOGIC ---
+    const STATUS_IDLE = 1;
+    const STATUS_RINGOUT = 2;
+    const STATUS_ONCALL = 3;
+    const BACKEND_WS_SERVER = "ws://192.168.148.247:8080";
+    const BACKEND_API_SERVER = "http://192.168.148.247:8080";
+    const TURN_SERVER = "192.168.151.50:3478";
+    let ws;
+    let pc;
+    let localStream;
+    let isCaller = false;
+    let CLID = null;
+    let callStatus = STATUS_IDLE;
+
+    // BUG FIX: The ICE Candidate Queue
+    let pendingCandidates = [];
+
+    const rtcConfig = {
+      iceServers: [{ urls: `turn:${TURN_SERVER}?transport=tcp`, username: 'guest', credential: 'password' }],
+      iceTransportPolicy: 'relay',
+    };
+
+    function setupWebSocket(session) {
+      // Include the session in the URL to mimic production routing
+      ws = new WebSocket(`${BACKEND_WS_SERVER}/ws?session=${session}`);
+
+      ws.onopen = () => {
+        const statusEl = document.getElementById('system-status');
+        statusEl.innerText = "System Online";
+        statusEl.className = "font-medium text-checked-in bg-green-50 px-4 py-2 rounded-full shadow-sm text-sm";
+      };
+
+      ws.onclose = () => {
+        console.warn("WS disconnected. Reconnecting...");
+
+        const statusEl = document.getElementById('system-status');
+        statusEl.innerText = "Reconnecting...";
+        statusEl.className = "font-medium text-yellow-600 bg-yellow-50 px-4 py-2 rounded-full shadow-sm text-sm";
+
+        // exponential backoff
+        setTimeout(() => {
+          setupWebSocket(session);
+        }, 1000);
+      };
+
+      ws.onerror = (err) => {
+        console.error("WS error:", err);
+        ws.close(); // force onclose to trigger reconnect
+      };
+
+      ws.onmessage = async (event) => {
+        const envelope = JSON.parse(event.data);
+
+        // UNWRAP the WSEnvelope
+        if (envelope.type !== "webrtc") return;
+        const msg = envelope.payload;
+
+        const targetRoom = msg.roomId || "1";
+
+        // console.log(`${msg.type}: `, msg)
+
+        if (msg.type === 'ring') {
+          if (callStatus != STATUS_IDLE || !msg.CLID) {
+            return;
+          }
+
+          if (CLID == null) {
+            CLID = msg.CLID;
+          }
+
+          showIncomingCall(targetRoom);
         }
 
-        // --- 4. WEBRTC & SIGNALING LOGIC ---
-        const STATUS_IDLE = 1;
-        const STATUS_RINGOUT = 2;
-        const STATUS_ONCALL = 3;
-        const BACKEND_WS_SERVER = "ws://192.168.149.60:8080";
-        const BACKEND_API_SERVER = "http://192.168.149.60:8080";
-        const TURN_SERVER = "192.168.149.60:3478";
-        let ws;
-        let pc;
-        let localStream;
-        let isCaller = false;
-        let CLID;
-        let callStatus = STATUS_IDLE;
+        console.log("before -----------> msg type: ", msg.type, "msg clid: ", msg.CLID, "current clid: ", CLID)
 
-        // BUG FIX: The ICE Candidate Queue
-        let pendingCandidates = [];
-
-        const rtcConfig = {
-            iceServers: [{ urls: `turn:${TURN_SERVER}?transport=tcp`, username: 'guest', credential: 'password' }],
-            iceTransportPolicy: 'relay',
-        };
-
-        function setupWebSocket(session) {
-            // Include the session in the URL to mimic production routing
-            ws = new WebSocket(`${BACKEND_WS_SERVER}/ws?session=${session}`);
-
-            ws.onopen = () => {
-                const statusEl = document.getElementById('system-status');
-                statusEl.innerText = "System Online";
-                statusEl.className = "font-medium text-checked-in bg-green-50 px-4 py-2 rounded-full shadow-sm text-sm";
-            };
-
-            ws.onclose = () => {
-                console.warn("WS disconnected. Reconnecting...");
-
-                const statusEl = document.getElementById('system-status');
-                statusEl.innerText = "Reconnecting...";
-                statusEl.className = "font-medium text-yellow-600 bg-yellow-50 px-4 py-2 rounded-full shadow-sm text-sm";
-
-                // exponential backoff
-                setTimeout(() => {
-                    setupWebSocket(session);
-                }, 1000);
-            };
-
-            ws.onerror = (err) => {
-                console.error("WS error:", err);
-                ws.close(); // force onclose to trigger reconnect
-            };
-
-            ws.onmessage = async (event) => {
-                const envelope = JSON.parse(event.data);
-
-                // UNWRAP the WSEnvelope
-                if (envelope.type !== "webrtc") return;
-                const msg = envelope.payload;
-
-                const targetRoom = msg.roomId || "1";
-
-                if (msg.type === 'ring') {
-                    if (callStatus != STATUS_IDLE) {
-                        return;
-                    }
-                    CLID = msg.CLID;
-                    console.log("msg:", msg)
-                    showIncomingCall(targetRoom);
-                }
-                if (msg.type === 'accept') {
-                    if (callStatus != STATUS_RINGOUT) {
-                        endCallUIState();
-                        return;
-                    }
-                    callStatus = STATUS_ONCALL;
-                    document.getElementById('system-status').innerText = `Connecting to Room ${targetRoom}...`;
-                    if (isCaller) await startWebRTC(true);
-                }
-                if (msg.type === 'offer') {
-                    if (callStatus != STATUS_ONCALL) {
-                        return;
-                    }
-                    await startWebRTC(false);
-                    await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-
-                    while (pendingCandidates.length) {
-                        await pc.addIceCandidate(pendingCandidates.shift());
-                    }
-
-                    const answer = await pc.createAnswer();
-                    await pc.setLocalDescription(answer);
-                    // CHANGE THIS LINE:
-                    const reservationRoomId = phoneBook.find(entry => entry.roomId == targetRoom).reservationRoomId;
-                    sendWebRTC({ type: 'answer', sdp: pc.localDescription, roomId: targetRoom, to: reservationRoomId, wsSession: "FRONT_DESK" });
-                }
-                if (msg.type === 'answer' && pc) {
-                    if (callStatus != STATUS_ONCALL) {
-                        return;
-                    }
-                    await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-
-                    // BUG FIX: Process candidates for the caller side
-                    while (pendingCandidates.length) {
-                        await pc.addIceCandidate(pendingCandidates.shift());
-                    }
-                }
-                if (msg.type === 'ice') {
-                    if (callStatus != STATUS_ONCALL) {
-                        return;
-                    }
-                    const candidate = new RTCIceCandidate(msg.candidate);
-
-                    // BUG FIX: Only add if remote description is ready, otherwise queue it
-                    if (pc && pc.remoteDescription && pc.remoteDescription.type) {
-                        await pc.addIceCandidate(candidate);
-                    } else {
-                        pendingCandidates.push(candidate);
-                    }
-                }
-                if (msg.type === 'answered_elsewhere') {
-                    if (callStatus == STATUS_IDLE) {
-                        endCallUIState(); // Reset the UI
-                    }
-                    
-                }
-                if (msg.type === 'missed' || msg.type === 'end_call') {
-                    endCallUIState(); // Reset the UI
-                }
-
-                if (msg.type === 'timeout') {
-                    toast.error("The call was terminated due to timeout.", { duration: 3000});
-                    endCallUIState(); // Reset the UI
-                }
-
-                let history = await fetchCallHistory()
-                renderHistory(history)
-            };
+        if (!msg.CLID || !CLID) {
+          return
         }
 
-        function endCallUIState() {
-            callStatus = STATUS_IDLE;
-            // 1. WebRTC Cleanup
-            if (pc) {
-                pc.close();
-                pc = null;
+        if (msg.CLID != CLID) {
+          // If this message is for a different call happening on another PC, ignore it.
+          return;
+        }
+
+        console.log("after -----------> msg type: ", msg.type, "msg clid: ", msg.CLID, "current clid: ", CLID)
+
+        if (msg.type === 'accept') {
+          if (callStatus != STATUS_RINGOUT) {
+            if (CLID == msg.CLID) {
+              endCallUIState();
             }
+            return;
+          }
+          document.getElementById('system-status').innerText = `Connecting to Room ${targetRoom}...`;
+          if (isCaller && callStatus != STATUS_ONCALL) {
+            console.log("starting webrtc")
+            await startWebRTC(true); 
+          }
+          callStatus = STATUS_ONCALL;
+        }
 
-            if (localStream) {
-                localStream.getTracks().forEach(track => track.stop());
-                localStream = null;
+        if (msg.type === 'offer') {
+          if (callStatus != STATUS_ONCALL) {
+            return;
+          }
+          await startWebRTC(false);
+          await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+
+          while (pendingCandidates.length) {
+            await pc.addIceCandidate(pendingCandidates.shift());
+          }
+
+          const answer = await pc.createAnswer();
+          await pc.setLocalDescription(answer);
+          // CHANGE THIS LINE:
+          const reservationRoomId = phoneBook.find(entry => entry.roomId == targetRoom).reservationRoomId;
+          sendWebRTC({ type: 'answer', sdp: pc.localDescription, roomId: targetRoom, to: reservationRoomId });
+        }
+        if (msg.type === 'answer' && pc) {
+          if (callStatus != STATUS_ONCALL) {
+            return;
+          }
+          await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+
+          // BUG FIX: Process candidates for the caller side
+          while (pendingCandidates.length) {
+            await pc.addIceCandidate(pendingCandidates.shift());
+          }
+        }
+        if (msg.type === 'ice') {
+  
+          if (callStatus != STATUS_ONCALL) {
+            return;
+          }
+
+          const candidate = new RTCIceCandidate(msg.candidate);
+
+          // BUG FIX: Only add if remote description is ready, otherwise queue it
+          if (pc && pc.remoteDescription && pc.remoteDescription.type) {
+            await pc.addIceCandidate(candidate);
+          } else {
+            pendingCandidates.push(candidate);
+          }
+        }
+        if (msg.type === 'answered_elsewhere') {
+          if (callStatus == STATUS_IDLE) {
+            // console.log(CLID, msg.CLID,`FRONT_DESK_${localStorage.getItem("session")}`, msg.fd)
+            if (CLID == msg.CLID) {
+              endCallUIState();
             }
+          }
 
-            pendingCandidates = [];
-
-            // 2. UI Cleanup
-            const banner = document.getElementById('active-call-banner');
-            if (banner) {
-                banner.classList.add('hidden');
-                banner.classList.remove('flex');
-            }
-
-            const statusEl = document.getElementById('system-status');
-            if (statusEl) {
-                statusEl.innerText = "System Online";
-                statusEl.className = "font-medium text-checked-in bg-green-50 px-4 py-2 rounded-full shadow-sm text-sm";
-            }
-
-            // 3. Reset state and refresh the grid to restore buttons
-            activeRoomId = null;
-            renderGrid();
+        }
+        if (msg.type === 'missed' || msg.type === 'end_call') {
+          if (CLID == msg.CLID) {
+            endCallUIState();
+          }
         }
 
-        async function getCallID(to) {
-            const session = localStorage.getItem("session");
-            const response = await fetch(`${BACKEND_API_SERVER}/admin/api/d/calllog/add?session=${session}&_from=FRONT_DESK&_to=${to}`, {
-                headers: {
-                    "X-CSRF-TOKEN": session,
-                }
-            });
-
-            if (response.status != 200) {
-                throw new Error("Unable to register a new CallLog.");
-            }
-
-            const obj = await response.json();
-
-            return obj["id"][0];
+        if (msg.type === 'timeout') {
+          console.log(CLID, msg.CLID)
+          if (CLID != msg.CLID) {
+            return
+          }
+          toast.error("The call was terminated due to timeout.", { duration: 3000 });
+          endCallUIState(); // Reset the UI
         }
 
-        // 2. Wrap outgoing messages in the WSEnvelope
-        function sendWebRTC(payload) {
-            payload["CLID"] = CLID ?? 1;
-            // console.log("WS STATE:", ws.readyState);
-            if (ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
-                    type: "webrtc",
-                    payload: payload
-                }));
-            } else {
-                console.error("WS NOT OPEN, state:", ws.readyState);
-            }
+        let history = await fetchCallHistory()
+        renderHistory(history)
+      };
+    }
+
+    function endCallUIState() {
+      callStatus = STATUS_IDLE;
+      // 1. WebRTC Cleanup
+      if (pc) {
+        pc.close();
+        pc = null;
+      }
+
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+        localStream = null;
+      }
+
+      pendingCandidates = [];
+
+      // 2. UI Cleanup
+      const banner = document.getElementById('active-call-banner');
+      if (banner) {
+        banner.classList.add('hidden');
+        banner.classList.remove('flex');
+      }
+
+      const statusEl = document.getElementById('system-status');
+      if (statusEl) {
+        statusEl.innerText = "System Online";
+        statusEl.className = "font-medium text-checked-in bg-green-50 px-4 py-2 rounded-full shadow-sm text-sm";
+      }
+
+      // 3. Reset state and refresh the grid to restore buttons
+      CLID = null;
+      activeRoomId = null;
+      isCaller = false
+      renderGrid();
+    }
+
+    async function getCallID(to) {
+      const session = localStorage.getItem("session");
+      const response = await fetch(`${BACKEND_API_SERVER}/admin/api/d/calllog/add?session=${session}&_from=FRONT_DESK&_to=${to}`, {
+        headers: {
+          "X-CSRF-TOKEN": session,
         }
+      });
 
-        // 3. Update all your action functions to use sendWebRTC instead of ws.send
-        async function initiateCall(roomId, reservationRoomId, roomName) {
-            isCaller = true;
-            activeRoomId = roomId;
-            showActiveCallBanner(roomName, "Ringing...");
+      if (response.status != 200) {
+        throw new Error("Unable to register a new CallLog.");
 
-            CLID = await getCallID(reservationRoomId);
-            callStatus = STATUS_RINGOUT;
+      }
 
-            sendWebRTC({ type: 'ring', roomId: roomId });
+      const obj = await response.json();
+      console.log(obj)
+
+      return obj["id"][0];
+    }
+
+    // 2. Wrap outgoing messages in the WSEnvelope
+    function sendWebRTC(payload) {
+      // payload["CLID"] = CLID ?? 1;
+      payload["CLID"] = CLID || null;
+
+      // console.log("WS STATE:", ws.readyState);
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: "webrtc",
+          payload: payload
+        }));
+      } else {
+        console.error("WS NOT OPEN, state:", ws.readyState);
+      }
+    }
+
+    // 3. Update all your action functions to use sendWebRTC instead of ws.send
+    async function initiateCall(roomId, reservationRoomId, roomName) {      
+      isCaller = true;
+      activeRoomId = roomId;
+      showActiveCallBanner(roomName, "Ringing...");
+
+      CLID = await getCallID(reservationRoomId);
+      console.log("CLID result from getCallID: ",CLID)
+      callStatus = STATUS_RINGOUT;
+
+      sendWebRTC({ type: 'ring', roomId: roomId });
+    }
+
+    function answerCall(roomId, reservationRoomId) {
+      document.getElementById(`answerBtn-${roomId}`).classList.add('hidden');
+      showActiveCallBanner(roomId, "Connecting...");
+      sendWebRTC({ type: 'accept', roomId: roomId, from: "FRONT_DESK" });
+      callStatus = STATUS_ONCALL;
+    }
+
+    function showIncomingCall(roomId) {
+      activeRoomId = roomId;
+      const roomName = phoneBook.find(entry => entry.roomId == roomId).roomName
+      const guestName = phoneBook.find(entry => entry.roomId == roomId).guestName
+      document.getElementById(`callBtn-${roomId}`).classList.add('hidden');
+      document.getElementById(`answerBtn-${roomId}`).classList.remove('hidden');
+      document.getElementById('system-status').innerText = `Incoming Call from ${roomName} - ${guestName}`;
+    }
+
+    function showActiveCallBanner(roomName, text) {
+      const banner = document.getElementById('active-call-banner');
+      banner.classList.remove('hidden');
+      banner.classList.add('flex');
+      document.getElementById('active-call-info').innerText = `${roomName} - ${text}`;
+    }
+
+    function endCall() {
+      if (pc) pc.close();
+      if (localStream) localStream.getTracks().forEach(track => track.stop());
+      pc = null;
+      pendingCandidates = [];
+
+      const banner = document.getElementById('active-call-banner');
+      banner.classList.add('hidden');
+      banner.classList.remove('flex');
+
+      renderGrid();
+      document.getElementById('system-status').innerText = "System Online";
+
+      // FIX: Use the helper so the backend actually routes this
+      sendWebRTC({ type: 'end_call', roomId: activeRoomId });
+
+      activeRoomId = null;
+      CLID = null;
+      callStatus = STATUS_IDLE;
+      isCaller = false;
+    }
+
+    async function startWebRTC(createOffer) {
+      
+      pc = new RTCPeerConnection(rtcConfig);
+      console.log(pc)
+
+      pc.onicecandidate = (e) => {
+        if (e.candidate) {
+          const reservationRoomId = phoneBook.find(entry => entry.roomId == activeRoomId).reservationRoomId;
+          sendWebRTC({
+            type: 'ice',
+            candidate: e.candidate,
+            roomId: activeRoomId,
+            to: reservationRoomId,
+          });
         }
+      };
 
-        function answerCall(roomId, reservationRoomId) {
-            document.getElementById(`answerBtn-${roomId}`).classList.add('hidden');
-            showActiveCallBanner(roomId, "Connecting...");
-            sendWebRTC({ type: 'accept', roomId: roomId });
-            callStatus = STATUS_ONCALL;
+      pc.ontrack = (e) => {
+        document.getElementById('remoteAudio').srcObject = e.streams[0];
+      };
+
+      pc.oniceconnectionstatechange = () => {
+        if (pc.iceConnectionState === 'connected') {
+          showActiveCallBanner(activeRoomId, "Call Connected");
         }
-
-        function showIncomingCall(roomId) {
-            activeRoomId = roomId;
-            const roomName = phoneBook.find(entry => entry.roomId == roomId).roomName
-            const guestName = phoneBook.find(entry => entry.roomId == roomId).guestName
-            document.getElementById(`callBtn-${roomId}`).classList.add('hidden');
-            document.getElementById(`answerBtn-${roomId}`).classList.remove('hidden');
-            document.getElementById('system-status').innerText = `Incoming Call from ${roomName} - ${guestName}`;
+        else {
+          console.log("UNHANDELED pc.iceConnectionState", pc.iceConnectionState);
         }
+      };
 
-        function showActiveCallBanner(roomName, text) {
-            const banner = document.getElementById('active-call-banner');
-            banner.classList.remove('hidden');
-            banner.classList.add('flex');
-            document.getElementById('active-call-info').innerText = `${roomName} - ${text}`;
-        }
+      localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
 
-        function endCall() {
-            if (pc) pc.close();
-            if (localStream) localStream.getTracks().forEach(track => track.stop());
-            pc = null;
-            pendingCandidates = [];
+      if (createOffer) {
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        sendWebRTC({
+          type: 'offer',
+          sdp: pc.localDescription,
+          roomId: activeRoomId
+        });
+      }
+    }
 
-            const banner = document.getElementById('active-call-banner');
-            banner.classList.add('hidden');
-            banner.classList.remove('flex');
+    function setupAuthSession() {
+      const urlParams = new URLSearchParams(window.location.search);
+      let session = urlParams.get('session');
 
-            renderGrid();
-            document.getElementById('system-status').innerText = "System Online";
+      if (session) {
+        // 1. Fresh login: Save it and clean the URL
+        localStorage.setItem('session', session);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } else {
+        // 2. Page refresh: Grab the saved session
+        session = localStorage.getItem('session');
+      }
 
-            // FIX: Use the helper so the backend actually routes this
-            sendWebRTC({ type: 'end_call', roomId: activeRoomId });
+      // 3. Security check: Halt if they somehow bypassed the auth flow
+      if (!session) {
+        throw new Error("No active session found. Please launch from the dashboard.");
+      }
 
-            activeRoomId = null;
-            callStatus = STATUS_IDLE;
-        }
+      return session;
+    }
 
-        async function startWebRTC(createOffer) {
-            pc = new RTCPeerConnection(rtcConfig);
+    // --- 6. ORCHESTRATOR ---
+    async function initializeApp() {
+      try {
+        const statusEl = document.getElementById('system-status');
+        statusEl.innerText = "Authenticating...";
 
-            pc.onicecandidate = (e) => {
-                if (e.candidate) {
-                    const reservationRoomId = phoneBook.find(entry => entry.roomId == activeRoomId).reservationRoomId;
-                    sendWebRTC({
-                        type: 'ice',
-                        candidate: e.candidate,
-                        roomId: activeRoomId,
-                        to: reservationRoomId,
-                    });
-                }
-            };
+        const session = setupAuthSession();
 
-            pc.ontrack = (e) => {
-                document.getElementById('remoteAudio').srcObject = e.streams[0];
-            };
+        const data = await loadRequiredData();
+        phoneBook = data.phoneBook;
+        const history = data.history;
 
-            pc.oniceconnectionstatechange = () => {
-                if (pc.iceConnectionState === 'connected') {
-                    showActiveCallBanner(activeRoomId, "Call Connected");
-                }
-                else {
-                    console.log("UNHANDELED pc.iceConnectionState", pc.iceConnectionState);
-                }
-            };
+        renderGrid();
+        renderHistory(history);
+        setupWebSocket(session);
 
-            localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-            localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+      } catch (error) {
+        console.error("Failed to initialize app:", error);
+        const statusEl = document.getElementById('system-status');
+        statusEl.innerText = "Error Loading System";
+        statusEl.className = "font-bold text-dnd bg-red-50 px-4 py-2 rounded-full";
+      }
+    }
 
-            if (createOffer) {
-                const offer = await pc.createOffer();
-                await pc.setLocalDescription(offer);
-                sendWebRTC({
-                    type: 'offer',
-                    sdp: pc.localDescription,
-                    roomId: activeRoomId
-                });
-            }
-        }
-
-        function setupAuthSession() {
-            const urlParams = new URLSearchParams(window.location.search);
-            let session = urlParams.get('session');
-
-            if (session) {
-                // 1. Fresh login: Save it and clean the URL
-                localStorage.setItem('session', session);
-                window.history.replaceState({}, document.title, window.location.pathname);
-            } else {
-                // 2. Page refresh: Grab the saved session
-                session = localStorage.getItem('session');
-            }
-
-            // 3. Security check: Halt if they somehow bypassed the auth flow
-            if (!session) {
-                throw new Error("No active session found. Please launch from the dashboard.");
-            }
-
-            return session;
-        }
-
-        // --- 6. ORCHESTRATOR ---
-        async function initializeApp() {
-            try {
-                const statusEl = document.getElementById('system-status');
-                statusEl.innerText = "Authenticating...";
-
-                const session = setupAuthSession();
-
-                const data = await loadRequiredData();
-                phoneBook = data.phoneBook;
-                const history = data.history;
-
-                renderGrid();
-                renderHistory(history);
-                setupWebSocket(session);
-
-            } catch (error) {
-                console.error("Failed to initialize app:", error);
-                const statusEl = document.getElementById('system-status');
-                statusEl.innerText = "Error Loading System";
-                statusEl.className = "font-bold text-dnd bg-red-50 px-4 py-2 rounded-full";
-            }
-        }
-
-        window.onload = initializeApp;
-    </script>
+    window.onload = initializeApp;
+  </script>
 </body>
 
 </html>
