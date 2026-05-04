@@ -366,7 +366,7 @@
           }
 
           if (CLID == null) {
-            CLID = msg.CLID;
+            CLID = msg.CLID || null;
           }
 
           showIncomingCall(targetRoom);
