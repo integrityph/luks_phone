@@ -312,9 +312,16 @@
     let isCaller = false;
     let CLID = null;
     let callStatus = STATUS_IDLE;
+    let ring = new Audio("ring.mp3")
+    ring.loop = true;
 
     // BUG FIX: The ICE Candidate Queue
     let pendingCandidates = [];
+
+    function stopAudio() {
+      ring.pause();
+      ring.currentTime = 0;
+    }
 
     // const rtcConfig = {
     //   iceServers: [{ urls: `turn:${TURN_SERVER}?transport=tcp`, username: 'guest', credential: 'password' }],
@@ -381,6 +388,7 @@
             CLID = msg.CLID || null;
           }
 
+          ring.play()
           showIncomingCall(targetRoom);
         }
 
@@ -409,6 +417,7 @@
             console.log("starting webrtc")
             await startWebRTC(true); 
           }
+          stopAudio()
           callStatus = STATUS_ONCALL;
         }
 
@@ -513,6 +522,7 @@
       }
 
       // 3. Reset state and refresh the grid to restore buttons
+      stopAudio()
       CLID = null;
       activeRoomId = null;
       isCaller = false
@@ -570,6 +580,7 @@
     function answerCall(roomId, reservationRoomId) {
       document.getElementById(`answerBtn-${roomId}`).classList.add('hidden');
       showActiveCallBanner(roomId, "Connecting...");
+      stopAudio()
       sendWebRTC({ type: 'accept', roomId: roomId, from: "FRONT_DESK" });
       callStatus = STATUS_ONCALL;
     }
